@@ -5,48 +5,67 @@ import '../../App.css'
 import { Card, Col, Row } from 'antd';
 import { Link } from 'react-router-dom';
 import Taskdetails from '../Taskdetails/Taskdetails'
+import 'react-datepicker/dist/react-datepicker.css';
+import DatePicker from 'react-datepicker';
 class Board extends Component{
     
     state={
-        tasklist:'',
+        tasklist:{title:'',descriptio:'',date:new Date()},
         stage:'',
         drop:'',
         fromdrop:'',
         todrop:'',
         adddrop:'',
-        modal:''
+        modal:'',
+        dis:'',
+        ord:'',
+        des:'',
+        da:''
     }
-    taskHadler = () => {
-        this.setState((prevState) => {
-           return{
-              modal: !prevState.modal
-           }
-        })
-     }
+    // taskHadler = () => {
+    //     this.setState((prevState) => {
+    //        return{
+    //           modal: !prevState.modal
+    //        }
+    //     })
+    //  }
     HandleChange(event)
       {
-          this.setState({tasklist:event.target.value})
+          this.setState({tasklist:{title:event.target.value,descriptio:this.state.tasklist.descriptio,date:this.state.tasklist.date}})
+          //console.log(this.state.tasklist)
       }
       HandleStage(event)
       {
           this.setState({stage:event.target.value})
       }
+      handleChangedate=date=>
+      {
+        this.setState({tasklist:{title:this.state.tasklist.title,descriptio:this.state.tasklist.descriptio,date:date}})
+      }
+      HandleDescription(event)
+      {
+          this.setState({tasklist:{title:this.state.tasklist.title,descriptio:event.target.value,date:this.state.tasklist.date}})
+          //console.log(this.state.tasklist)
+      }
      addTask=()=>
         {
+            console.log(this.state.tasklist)
             let task1=this.props.task
              let TaskData=JSON.parse(localStorage.getItem(this.props.username))
-            console.log(this.props.task)
-            console.log( TaskData.boards[task1][0].Todo)
+            //console.log(this.props.task)
+            //console.log( TaskData.boards[task1][0].Todo)
             let array = TaskData.boards[this.props.task].map(obj => {
                 return Object.keys(obj)
             })
             let index = array.findIndex((ele) => {
                 return ele == this.state.adddrop
             })
+            //console.log(this.state.tasklist)
+            //console.log(TaskData)
             TaskData.boards[task1][index][this.state.adddrop].push(this.state.tasklist)
             //TaskData.boards[task1][1].Done.push(this.state.tasklist)
 
-            console.log(TaskData)
+           // console.log(TaskData)
              localStorage.setItem(this.props.username,JSON.stringify( TaskData))
             // console.log(this.props.task)
             // console.log(TaskData.boards[task1][0].todo)
@@ -142,8 +161,21 @@ class Board extends Component{
         adddrop=(e)=>{
             this.setState({adddrop:e.target.value})
         }
-        taskHadler=()=>{
+        taskHadler=(el,des,da)=>{
+            this.setState({dis:el,des:des,da:da})
+            console.log(el)
+            this.setState((prevState) => {
+                return{
+                   modal: !prevState.modal,
+                   
+                }
+             })
+            
 
+        }
+        handleChangedate=date=>
+        {
+          this.setState({date:date})
         }
     render(){
        let data=JSON.parse(localStorage.getItem(this.props.username))
@@ -160,18 +192,19 @@ class Board extends Component{
     
     })
     let array = data.boards[this.props.task].map(obj => {
+    
         
         return <Col span={8}><Card title={Object.keys(obj)} style={{ width: 300 }}>
             {Object.values(obj).map(task => {
                 return task.map((ele) => {
-                    return <a onClick={this.taskHadler}> {ele}</a>
+                    console.log(ele)
+                    return <li><Link onClick={()=>this.taskHadler(ele.title,ele.descriptio,ele.date)}> {ele.title}</Link></li>
                 })
             })}
         </Card></Col>
     })
     //    let tasks=data.boards[this.props.task][0].Todo.map(item=>{
     //        console.log(item)
-    
     //         return <tr>
     //         <td >{item}</td></tr>
            
@@ -181,6 +214,11 @@ class Board extends Component{
     //     console.log(tasks)
         return(
             <div>
+                {/* <div class="card">
+
+<h5 class="card-header info-color white-text text-center py-4">
+    <strong>Welcome {this.props.username}</strong>
+</h5> */}
             <table>
                 <tr>
 
@@ -209,8 +247,6 @@ class Board extends Component{
 {/* </div>
 </div>
 </div> */}
-</tr>
-<tr>
 <td><label>Rearrage tasks</label></td>
 <td><select class="browser-default custom-select" onChange={this.fromdrop}>
     {op}
@@ -220,10 +256,10 @@ class Board extends Component{
 </select></td>
 <td>
 <button class="btn btn-outline-primary btn-sm m-0 waves-effect" onClick={this.rearrage}>Rearrage</button><br></br></td>
-</tr>
-<tr>
+
+
 <td><label>Delete stage</label></td>
-<td colSpan="2"><select class="browser-default custom-select" onChange={this.fromdrop}>
+<td ><select class="browser-default custom-select" onChange={this.fromdrop} value="from stage">
     {op}
 </select></td>
 
@@ -232,11 +268,15 @@ class Board extends Component{
 <tr>
     <td><label>Add Task</label></td>
     <div class="md-form">
-<td><input class="form-control" id="ip1" type="text" placeholder="Enter task " onChange={(event)=>this.HandleChange(event)}/><br></br></td>
+<td colSpan="2"><input class="form-control" id="ip2" type="text" placeholder="Enter task " onChange={(event)=>this.HandleChange(event)}/></td>
 </div>
-<td><select class="browser-default custom-select" onChange={this.adddrop} >
+<div class="md-form">
+<td colSpan="2"><input class="form-control" id="ip1" type="text" placeholder="Enter description" onChange={(event)=>this.HandleDescription(event)}/></td>
+</div>
+<td colSpan="2"><select class="browser-default custom-select" onChange={this.adddrop} >
     {op}
 </select></td>
+<td colSpan="2"><DatePicker  id="date" dateFormat='dd-MM-yyyy' selected={this.state.date} value={this.state.date} onChange={this.handleChangedate} /><br/><br/></td>
 <td><button class="btn btn-outline-primary btn-sm m-0 waves-effect" onClick={this.addTask}>Add</button></td>
 {/* </div>
 </div>
@@ -255,16 +295,21 @@ class Board extends Component{
                         </tr>}
                     </tbody>  
                 </table> */}
-                <div className="site-card3">
+                <div className="site-card3" style={{overflowY: 'scroll'}}>
                 <Row gutter={16}>
                     {array}
                     </Row>
                 </div>
                 <Taskdetails
                 modal={this.state.modal}
-                taskHadler={this.taskHadler}/>
+                taskHadler={this.taskHadler}
+                task1={this.state.dis}
+                des={this.state.des}
+                da={this.state.da}
+                />
                 
             </div>
+            //</div>
         )
     }
 }

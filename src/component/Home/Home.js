@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import {Link,Switch,Route} from 'react-router-dom';
 import Board from '../Board/Board';
 import '../../App.css'
+import './Home.css'
 //import { Card } from 'antd';
 import {Button, Calendar} from 'antd'
 import 'antd/dist/antd.css';
@@ -71,26 +72,43 @@ export default class BoardGroup extends Component {
         return(
             <div>
                 {!this.state.toggle?
+                <div class="card">
+
+                <h5 class="card-header info-color white-text text-center py-4">
+                    <strong>Welcome {this.props.username}</strong>
+                </h5>
+                <div class="card-body px-lg-2">
             <div class="md-form">
                 
                 <input class="form-control form-control-lg" type="text" placeholder="Enter Board " onChange={this.handleNewBoard}/>
                 <Button type="primary" class="btn btn-outline-primary btn-sm m-0 waves-effect" onClick={this.handleSubmit}> submit</Button>
+                </div>
+                </div>
                 <div className="site-card-wrapper" justify="space-around" align="middle">
+
                 <Card title=" My Boards"  align="middle">  
     
             {arr}
             </Card>
             </div>
-            
-            </div>:
+            </div>
+            :
         <div>
-            <button onClick={this.togglehad} class="btn btn-outline-primary btn-sm m-0 waves-effect">back</button>
+             <div class="card">
+
+<h5 class="card-header info-color white-text text-center py-4">
+    <strong>Welcome {this.props.username}</strong>
+</h5>
+            <button id="h1" onClick={this.togglehad} class="btn btn-outline-primary btn-sm m-0 waves-effect">back</button>
                 <Switch>
                     {arr2}
                    
                 </Switch>
-                </div>}
+                </div>
+                </div>
+                }
         </div>
+        
 
         );
     }
